@@ -100,6 +100,14 @@ const userSchema = new mongoose.Schema(
 
 userSchema.plugin(uniqueValidator);
 
+userSchema.pre("validate", function sanitizeInput() {
+  this.firstName = this.firstName.trim();
+  this.lastName = this.lastName.trim();
+  this.username = this.username.trim();
+  this.email = this.email.trim();
+  this.password = this.password.trim();
+});
+
 userSchema.pre("save", async function preSaveHook() {
   if (this.isModified("password")) {
     this.password = await bcrypt.hash(this.password, 10);
