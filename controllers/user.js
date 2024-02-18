@@ -1,13 +1,23 @@
-/* eslint-disable no-underscore-dangle */
-import  bcrypt  from "bcrypt";
-import  jwt  from "jsonwebtoken";
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 import User from "../models/user.js";
+import asyncWrapper from "../utils/asyncWrapper.js";
 
-export async function register(req, res) {
-  res.status(501).json({ message: "To-Do" });
+async function register(req, res, next) {
+  const [mongooseError, user] = await asyncWrapper(
+    new User(req.validReq).save(),
+  );
+
+  if (mongooseError) {
+    console.log(mongooseError);
+    next(mongooseError);
+    return;
+  }
+
+  res.status(201).json(user);
 }
 
-export async function login(userName, password) {
+async function login(userName, password) {
   const user = await User.findOne({ username: userName });
   if (!user) return false;
 
@@ -23,3 +33,5 @@ export async function login(userName, password) {
   };
   return loginUser;
 }
+
+export default { register, login}
