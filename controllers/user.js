@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
-import { bcrypt } from "bcrypt";
-import { jwt } from "jsonwebtoken";
-import User from "../models/user";
+import  bcrypt  from "bcrypt";
+import  jwt  from "jsonwebtoken";
+import User from "../models/user.js";
 
 export async function register(req, res) {
   res.status(501).json({ message: "To-Do" });
