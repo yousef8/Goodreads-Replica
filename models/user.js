@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import uniqueValidator from "mongoose-unique-validator";
+import asyncWrapper from "../utils/asyncWrapper.js";
 
 const userSchema = new mongoose.Schema(
   {
@@ -119,6 +120,28 @@ userSchema.methods.verifyPassword = async function verifyPassword(password) {
   return valid;
 };
 
+userSchema.statics.createDefaultAdmin = async function createDefaultAdmin() {
+  const [error] = await asyncWrapper(
+    this.findOneAndUpdate(
+      { username: "admin" },
+      {
+        username: "admin",
+        password: "admin",
+        email: "admin@local.com",
+        isAdmin: true,
+      },
+      { upsert: true, new: true },
+    ).exec(),
+  );
+
+  if (error) {
+    console.log("Couldn't create default admin user");
+    return;
+  }
+  console.log("Create default admin user");
+};
+
 const User = mongoose.model("user", userSchema);
+User.createDefaultAdmin();
 
 export default User;
