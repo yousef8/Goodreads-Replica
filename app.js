@@ -1,10 +1,20 @@
 import "dotenv/config";
 import express from "express";
 import mongoose from "mongoose";
+import cors from "cors";
+import bodyParser from "body-parser";
 import routes from "./routes/index.js";
 
 const app = express();
 app.use(express.json());
+app.use(bodyParser.json());
+
+const corsOptions ={
+  origin:'*', 
+  credentials:true,
+  optionSuccessStatus:200,
+}
+app.use(cors(corsOptions))
 
 const port = process.env.PORT || 5000;
 
