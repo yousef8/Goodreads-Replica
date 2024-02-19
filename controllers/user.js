@@ -34,15 +34,12 @@ async function login ( req, res ) {
   };
 
   const token = jwt.sign(
-    { userId: user._id }, "L#z&7B7Jq*$qC3%N64s@J4pP3r^gZ!mT",
+    { userId: user._id }, process.env.SECRET,
     {
       expiresIn: "1d",
     },
   );
-  return res.status(200).json({
-    message: "success",
-    data: {token, user},
-  });
+  return res.status(200).json({token, user});
 
 }
 
