@@ -121,12 +121,20 @@ userSchema.methods.verifyPassword = async function verifyPassword(password) {
 };
 
 userSchema.statics.createDefaultAdmin = async function createDefaultAdmin() {
+  const [hashError, password] = await asyncWrapper(
+    bcrypt.hash(process.env.DEFAULT_ADMIN_PASSWORD, 10),
+  );
+
+  if (hashError) {
+    console.log("Couldn't hash the password", hashError);
+    return;
+  }
   const [error] = await asyncWrapper(
     this.findOneAndUpdate(
       { username: "admin" },
       {
         username: "admin",
-        password: "admin",
+        password,
         email: "admin@local.com",
         isAdmin: true,
       },
