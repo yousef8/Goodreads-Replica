@@ -1,10 +1,32 @@
 import "dotenv/config";
 import express from "express";
 import mongoose from "mongoose";
+import multer from "multer";
 import routes from "./routes/index.js";
+import ValidationError from "./errors/validationError.js";
+import CustomError from "./errors/customError.js";
+
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images");
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${new Date().toISOString()}-${file.originalname}`);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  const imageMimeTypes = ["image/png", "image/jpg", "image/jpeg", "image/webp"];
+  if (imageMimeTypes.includes(file.mimetype)) {
+    cb(null, true);
+    return;
+  }
+  cb(new ValidationError("Unsupported image format"), false);
+};
 
 const app = express();
 app.use(express.json());
+app.use(multer({ storage: fileStorage, fileFilter }).single("image")); // single: for receiving 1 file, image: the name of the form field
 
 const port = process.env.PORT || 5000;
 
@@ -35,9 +57,15 @@ app.use((err, req, res, next) => {
     return;
   }
 
+  // Handle Our custome error
+  if (err instanceof CustomError) {
+    res.status(err.status).json({ message: err.message });
+    return;
+  }
+
   // Any Other UnHandled Error
   console.log("UnHandled Error", err);
-  res.status(500).json({ msg: "Internal Server Error" });
+  res.status(500).json({ message: "Internal Server Error" });
 });
 
 mongoose.connect("mongodb://127.0.0.1:27017/GoodreadsApp").then(() => {
