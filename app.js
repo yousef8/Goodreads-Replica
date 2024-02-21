@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import cors from "cors";
 import mongoose from "mongoose";
 import multer from "multer";
 import routes from "./routes/index.js";
@@ -30,6 +31,13 @@ app.use(multer({ storage: fileStorage, fileFilter }).single("image")); // single
 
 const port = process.env.PORT || 5000;
 
+const corsOptions = {
+  origin: "*",
+  credentials: true,
+  optionSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 app.use(routes);
 
 app.use((err, req, res, next) => {
