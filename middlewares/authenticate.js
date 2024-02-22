@@ -30,6 +30,10 @@ async function authenticate(req, res, next) {
     req.user = user;
     next();
   } catch (err) {
+    if (err instanceof jwt.JsonWebTokenError) {
+      next(new AuthenticationError(`${err.message}`));
+      return;
+    }
     next(new InternalError(err.message));
   }
 }
