@@ -21,4 +21,11 @@ router.patch(
   authorCtrler.updateAuthor,
 );
 
+router.delete(
+  "/authors/:id",
+  authenticate,
+  authorizeAdmin,
+  authorCtrler.deleteAuthor,
+);
+
 export default router;
