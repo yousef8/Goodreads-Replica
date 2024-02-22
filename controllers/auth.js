@@ -4,14 +4,14 @@ import util from "util";
 import User from "../models/user.js";
 import asyncWrapper from "../utils/asyncWrapper.js";
 
-const verifyAsync = util.promisify(jwt.verify);
 
+const verifyAsync = util.promisify(jwt.verify);
 async function authAdmin ( req, res, next ) {
-        if ( !req.headers.authorization )
+        if ( !req.cookies.token )
             return res.sendStatus( 401 );
-        const { authorization } = req.headers;
+        const  {token} = req.cookies;
     const [ jwtErr, isAuth ] = await asyncWrapper(
-        verifyAsync( authorization, process.env.SECRET ),
+        verifyAsync( token, process.env.SECRET ),
         );
         if ( jwtErr )
             return next( jwtErr );
@@ -22,10 +22,10 @@ async function authAdmin ( req, res, next ) {
 }
 
 async function authUser ( req, res, next ) {
-    if (!req.headers.authorization) return res.sendStatus(401);
-    const { authorization } = req.headers;
+    if (!req.cookies.token) return res.sendStatus(401);
+    const { token } = req.cookies;
     const [jwtErr, isAuth] = await asyncWrapper(
-    verifyAsync(authorization, process.env.SECRET),
+    verifyAsync(token, process.env.SECRET),
     );
     if (jwtErr) return next(jwtErr);
     const user = await User.findById(isAuth.id).exec();

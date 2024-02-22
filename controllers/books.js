@@ -1,5 +1,4 @@
 import multer from "multer";
-import path from "path"
 import Book from "../models/books.js";
 import asyncWrapper from "../utils/asyncWrapper.js";
 

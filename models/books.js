@@ -2,7 +2,7 @@
 /* eslint-disable no-underscore-dangle */
 import mongoose from "mongoose";
 import { autoInc } from "auto-increment-group";
-import Author from "../models/author.js";
+//import Author from "../models/author.js";
 import Category from "../models/category.js";
 
 const bookSchema = mongoose.Schema(
@@ -18,7 +18,7 @@ const bookSchema = mongoose.Schema(
       type: String,
       default: "default.jpg",
     },
-    authorId: {
+    /* authorId: {
       type: Number,
       validate: {
         validator: async function isAuthorExist(v) {
@@ -27,7 +27,7 @@ const bookSchema = mongoose.Schema(
         },
         message: (props) => `${props.value} not found!`,
       },
-    },
+    }, */
     categoryId: {
       type: Number,
       required: true,

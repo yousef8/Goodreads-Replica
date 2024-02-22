@@ -39,7 +39,11 @@ async function login ( req, res ) {
       expiresIn: "1d",
     },
   );
-  return res.status(200).json({token, user});
+  res.cookie( "token", token, {
+    httpOnly: true,
+    secure:true,
+  })
+  return res.status(200).json({user});
 
 }
 
