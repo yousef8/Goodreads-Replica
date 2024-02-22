@@ -66,6 +66,14 @@ app.use((err, req, res, next) => {
     return;
   }
 
+  // Handle express.json() parsing Error
+  if (err.type === "entity.parse.failed" && err instanceof SyntaxError) {
+    res.status(400).json({
+      message: err.message,
+    });
+    return;
+  }
+
   // Handle Our custome error
   if (err instanceof CustomError) {
     res.status(err.status).json({ message: err.message });
