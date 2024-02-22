@@ -80,7 +80,17 @@ app.use((err, req, res, next) => {
     return;
   }
 
-  // Any Other UnHandled Error
+  // Handle Mongoose duplicate key error
+  if (
+    err.name === "MongoServerError" &&
+    (err.code === 11000 || err.code === 11001)
+  ) {
+    res
+      .status(400)
+      .json({ message: `Duplication Error: ${err.keyValue.name}` });
+    return;
+  }
+
   console.log("UnHandled Error", err);
   res.status(500).json({ message: `Internal Server Error: ${err.message}` });
 });
