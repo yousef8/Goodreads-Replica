@@ -4,6 +4,7 @@ import validateCreateAuthorReq from "../middlewares/validateCreateAuthorReq.js";
 import authenticate from "../middlewares/authenticate.js";
 import authorizeAdmin from "../middlewares/authorizeAdmin.js";
 import validateUpdateAuthorReq from "../middlewares/validateUpdateAuthorReq.js";
+import upload from "../middlewares/multerConfig.js";
 
 const router = Router();
 
@@ -11,6 +12,7 @@ router.post(
   "/authors",
   authenticate,
   authorizeAdmin,
+  upload.single("image"),
   validateCreateAuthorReq,
   authorCtrler.create,
 );
@@ -23,6 +25,7 @@ router.patch(
   "/authors/:id",
   authenticate,
   authorizeAdmin,
+  upload.single("image"),
   validateUpdateAuthorReq,
   authorCtrler.updateAuthor,
 );
