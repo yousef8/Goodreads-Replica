@@ -73,7 +73,7 @@ app.use((err, req, res, next) => {
 
   // Any Other UnHandled Error
   console.log("UnHandled Error", err);
-  res.status(500).json({ message: "Internal Server Error" });
+  res.status(500).json({ message: `Internal Server Error: ${err.message}` });
 });
 
 mongoose.connect("mongodb://127.0.0.1:27017/GoodreadsApp").then(() => {

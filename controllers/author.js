@@ -29,7 +29,7 @@ async function getAuthors(req, res, next) {
   const [searchError, authors] = await asyncWrapper(Author.find({}).exec());
 
   if (searchError) {
-    next(new InternalError("Something went wrong with search operation"));
+    next(new InternalError(searchError.message));
     return;
   }
 
@@ -42,7 +42,7 @@ async function getAuthor(req, res, next) {
   );
 
   if (searchError) {
-    next(new InternalError("Something went wrong with search operation"));
+    next(new InternalError(searchError.message));
   }
 
   res.json(author || {});
@@ -76,7 +76,7 @@ async function updateAuthor(req, res, next) {
   const [saveError, newAuthor] = await asyncWrapper(author.save());
 
   if (saveError) {
-    next(new InternalError(saveError));
+    next(new InternalError(saveError.message));
     return;
   }
 
