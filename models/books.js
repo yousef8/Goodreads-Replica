@@ -2,8 +2,8 @@
 /* eslint-disable no-underscore-dangle */
 import mongoose from "mongoose";
 import { autoInc } from "auto-increment-group";
-import Author from "../models/author.js";
-import Category from "../models/category.js";
+import Author from "./author.js";
+import Category from "./category.js";
 
 const bookSchema = mongoose.Schema(
   {
@@ -14,12 +14,12 @@ const bookSchema = mongoose.Schema(
       minLength: [2, "Name must be at least 2 characters long"],
       maxLength: [50, "Name cannot exceed 50 characters"],
     },
-    photo: {
+    imageUrl: {
       type: String,
       default: "default.jpg",
     },
     authorId: {
-      type: Number,
+      type: String,
       validate: {
         validator: async function isAuthorExist(v) {
           const author = await Author.find({ id: v });
@@ -29,7 +29,7 @@ const bookSchema = mongoose.Schema(
       },
     },
     categoryId: {
-      type: Number,
+      type: String,
       required: true,
       validate: {
         validator: async function ifCategoryExist(v) {

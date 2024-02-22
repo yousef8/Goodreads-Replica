@@ -1,33 +1,30 @@
-import express from "express"
-import booksCtrlr from "../controllers/books.js"
-import validation from "../middlewares/validateBooks.js"
-import auth from "../controllers/auth.js";
+import { Router } from "express";
+import booksCtrler from "../controllers/books.js";
+import validation from "../middlewares/validateBooks.js";
+import authenticate from "../middlewares/authenticate.js";
+import authorizeAdmin from "../middlewares/authorizeAdmin.js";
 
-const router = express.Router();
-router.use(express.urlencoded({ extended: true }));
+const router = Router();
 
-router.use( auth.authAdmin );
 router.post(
   "/",
-  booksCtrlr.upload.single( "photo" ),
-  ( req, res, next ) => {
-    req.body.photo = req.file.path;
-    next();
-  },
-  validation.validateBook,
-  booksCtrlr.create,
+  authenticate,
+  authorizeAdmin,
+  validation.validateCreateBookReq,
+  booksCtrler.create,
 );
 router.patch(
   "/:id",
-  booksCtrlr.upload.single("photo"),
-  (req, res, next) => {
-    req.body.photo = req.file.path;
-    next();
-  },
-  validation.validateUpdate,
-  booksCtrlr.update,
+  authenticate,
+  authorizeAdmin,
+  validation.validateUpdateBookReq,
+  booksCtrler.update,
 );
-router.get( '/:id', booksCtrlr.getBook ) 
-router.delete("/:id", booksCtrlr.remove);
 
-export default router
+router.get("/", booksCtrler.getAll);
+
+router.get("/:id", booksCtrler.getBook);
+
+router.delete("/:id", authenticate, authorizeAdmin, booksCtrler.remove);
+
+export default router;
