@@ -67,7 +67,9 @@ async function updateAuthor(req, res, next) {
     author[key] = value;
   });
 
+  let oldImageUrl;
   if (req.file) {
+    oldImageUrl = author.imageUrl;
     author.imageUrl = `/${req.file.path}`;
   }
 
@@ -76,6 +78,13 @@ async function updateAuthor(req, res, next) {
   if (saveError) {
     next(new InternalError(saveError));
     return;
+  }
+
+  if (oldImageUrl) {
+    const deleteImageError = await deleteFile(oldImageUrl);
+    if (deleteImageError) {
+      console.log(`Couldn't delete image: ${deleteImageError.message}`);
+    }
   }
 
   res.json(newAuthor);
