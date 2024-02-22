@@ -14,6 +14,7 @@ async function update(req, res, next) {
   const [monogoErr, updatedCategory] = await asyncWrapper(
     Category.findOneAndUpdate({ id: req.params.id }, req.category, {
       runValidators: true,
+      new: true,
     }),
   );
   if (monogoErr) return next(monogoErr);
@@ -54,7 +55,7 @@ async function getAll(req, res, next) {
 
 async function getOne(req, res, next) {
   const [searchError, category] = await asyncWrapper(
-    Category.find({ id: req.params.id }),
+    Category.findOne({ id: req.params.id }),
   );
 
   if (searchError) {
