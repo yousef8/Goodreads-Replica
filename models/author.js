@@ -55,7 +55,7 @@ const authorSchema = new mongoose.Schema(
   },
 );
 
-authorSchema.plugin(autoInc, { startAt: 1 });
+authorSchema.plugin(autoInc, { startAt: 1, digits: 1 });
 
 const Author = mongoose.model("author", authorSchema);
 
