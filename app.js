@@ -28,6 +28,7 @@ const fileFilter = (req, file, cb) => {
 const app = express();
 app.use(express.json());
 app.use(multer({ storage: fileStorage, fileFilter }).single("image")); // single: for receiving 1 file, image: the name of the form field
+app.use("/images", express.static("images"));
 
 const port = process.env.PORT || 5000;
 
