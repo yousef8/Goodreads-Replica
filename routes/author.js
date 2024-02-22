@@ -7,7 +7,13 @@ import validateUpdateAuthorReq from "../middlewares/validateUpdateAuthorReq.js";
 
 const router = Router();
 
-router.post("/authors", validateCreateAuthorReq, authorCtrler.create);
+router.post(
+  "/authors",
+  authenticate,
+  authorizeAdmin,
+  validateCreateAuthorReq,
+  authorCtrler.create,
+);
 
 router.get("/authors", authenticate, authorCtrler.getAuthors);
 
