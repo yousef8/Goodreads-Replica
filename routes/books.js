@@ -1,7 +1,7 @@
 import { Router } from "express";
 import upload from "../middlewares/multerConfig.js";
 import booksCtrler from "../controllers/books.js";
-import validation from "../middlewares/validateBooks.js";
+import bookValidation from "../middlewares/bookSchemaValidation.js";
 import authenticate from "../middlewares/authenticate.js";
 import authorizeAdmin from "../middlewares/authorizeAdmin.js";
 
@@ -12,7 +12,7 @@ router.post(
   authenticate,
   authorizeAdmin,
   upload.single("image"),
-  validation.validateCreateBookReq,
+  bookValidation.validateCreate,
   booksCtrler.create,
 );
 router.patch(
@@ -20,7 +20,7 @@ router.patch(
   authenticate,
   authorizeAdmin,
   upload.single("image"),
-  validation.validateUpdateBookReq,
+  bookValidation.validateUpdate,
   booksCtrler.update,
 );
 

@@ -1,9 +1,8 @@
 import { Router } from "express";
 import authorCtrler from "../controllers/author.js";
-import validateCreateAuthorReq from "../middlewares/validateCreateAuthorReq.js";
 import authenticate from "../middlewares/authenticate.js";
 import authorizeAdmin from "../middlewares/authorizeAdmin.js";
-import validateUpdateAuthorReq from "../middlewares/validateUpdateAuthorReq.js";
+import authorValidation from "../middlewares/authorSchemaValidation.js";
 import upload from "../middlewares/multerConfig.js";
 
 const router = Router();
@@ -13,7 +12,7 @@ router.post(
   authenticate,
   authorizeAdmin,
   upload.single("image"),
-  validateCreateAuthorReq,
+  authorValidation.validateCreate,
   authorCtrler.create,
 );
 
@@ -26,7 +25,7 @@ router.patch(
   authenticate,
   authorizeAdmin,
   upload.single("image"),
-  validateUpdateAuthorReq,
+  authorValidation.validateUpdate,
   authorCtrler.updateAuthor,
 );
 

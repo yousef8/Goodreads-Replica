@@ -1,7 +1,7 @@
 import joi from "joi";
 import asyncWrapper from "../utils/asyncWrapper.js";
 
-const validateCreateBookReq = async (req, res, next) => {
+const validateCreate = async (req, res, next) => {
   const bookSchema = joi.object({
     name: joi.string().trim().required(),
     image: joi.binary(),
@@ -19,7 +19,7 @@ const validateCreateBookReq = async (req, res, next) => {
   return next(err);
 };
 
-const validateUpdateBookReq = async (req, res, next) => {
+const validateUpdate = async (req, res, next) => {
   const shcema = joi.object({
     name: joi.string().trim(),
     image: joi.binary(),
@@ -36,4 +36,4 @@ const validateUpdateBookReq = async (req, res, next) => {
   return next();
 };
 
-export default { validateCreateBookReq, validateUpdateBookReq };
+export default { validateCreate, validateUpdate };

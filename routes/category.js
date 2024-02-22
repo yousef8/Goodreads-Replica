@@ -2,7 +2,7 @@ import { Router } from "express";
 import category from "../controllers/category.js";
 import authenticate from "../middlewares/authenticate.js";
 import authorizeAdmin from "../middlewares/authorizeAdmin.js";
-import validateCategoryReq from "../middlewares/validateCategory.js";
+import categoryValidation from "../middlewares/categorySchemaValidation.js";
 
 const router = Router();
 
@@ -10,7 +10,7 @@ router.post(
   "/",
   authenticate,
   authorizeAdmin,
-  validateCategoryReq,
+  categoryValidation.validateCreate,
   category.create,
 );
 
@@ -18,7 +18,7 @@ router.patch(
   "/:id",
   authenticate,
   authorizeAdmin,
-  validateCategoryReq,
+  categoryValidation.validateUpdate,
   category.update,
 );
 
