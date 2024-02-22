@@ -88,30 +88,21 @@ async function updateAuthor(req, res, next) {
 }
 
 async function deleteAuthor(req, res, next) {
-  const [searchError, author] = await asyncWrapper(
-    Author.findOne({ id: req.params.id }).exec(),
+  const [deleteError, deletedAuthor] = await asyncWrapper(
+    Author.findOneAndDelete({ id: req.params.id }).exec(),
   );
 
-  if (searchError) {
-    next(new InternalError(searchError.message));
+  if (deleteError) {
+    next(new InternalError(deleteError.message));
     return;
   }
 
-  if (!author) {
+  if (!deletedAuthor) {
     res.status(404).json({});
     return;
   }
 
-  const imagePath = author.imageUrl;
-
-  const [deleteAuthorError] = await asyncWrapper(author.deleteOne());
-
-  if (deleteAuthorError) {
-    next(new InternalError(deleteAuthorError.message));
-    return;
-  }
-
-  await deleteFile(imagePath);
+  deleteFile(deletedAuthor.imageUrl);
 
   res.status(204).json({});
 }
