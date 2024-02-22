@@ -15,9 +15,9 @@ router.post(
   authorCtrler.create,
 );
 
-router.get("/authors", authenticate, authorCtrler.getAuthors);
+router.get("/authors", authorCtrler.getAuthors);
 
-router.get("/authors/:id", authenticate, authorCtrler.getAuthor);
+router.get("/authors/:id", authorCtrler.getAuthor);
 
 router.patch(
   "/authors/:id",
