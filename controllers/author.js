@@ -47,4 +47,37 @@ async function getAuthor(req, res, next) {
   res.json(author || {});
 }
 
-export default { create, getAuthors, getAuthor };
+async function updateAuthor(req, res, next) {
+  const [searchError, author] = await asyncWrapper(
+    Author.findOne({ id: req.params.id }).exec(),
+  );
+
+  if (searchError) {
+    next(new InternalError(searchError.message));
+    return;
+  }
+
+  if (!author) {
+    res.status(404).json({});
+    return;
+  }
+
+  Object.entries(req.validReq).forEach(([key, value]) => {
+    author[key] = value;
+  });
+
+  if (req.file) {
+    author.imageUrl = `/${req.file.path}`;
+  }
+
+  const [saveError, newAuthor] = await asyncWrapper(author.save());
+
+  if (saveError) {
+    next(new InternalError(saveError));
+    return;
+  }
+
+  res.json(newAuthor);
+}
+
+export default { create, getAuthors, getAuthor, updateAuthor };
