@@ -42,9 +42,10 @@ async function update(req, res, next) {
 
   const [saveError, newBook] = await asyncWrapper(book.save());
 
+  if (saveError) return next(new InternalError(saveError.message));
+
   deleteFile(imageOldUrl);
 
-  if (saveError) return next(new InternalError(saveError.message));
   return res.status(200).json(newBook);
 }
 
