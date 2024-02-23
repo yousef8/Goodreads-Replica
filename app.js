@@ -2,9 +2,9 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
-import cookieParser from "cookie-parser";
 import routes from "./routes/index.js";
 import errorHandler from "./middlewares/errorHandler.js";
+
 const port = process.env.PORT || 5000;
 const corsOptions = {
   origin: "*",
@@ -16,7 +16,7 @@ const app = express();
 app.use(express.json());
 app.use("/images", express.static("images"));
 app.use(cors(corsOptions));
-app.use( cookieParser() );
+
 app.use(routes);
 
 app.use(errorHandler);
