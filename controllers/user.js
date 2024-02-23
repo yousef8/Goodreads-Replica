@@ -28,17 +28,23 @@ async function login(req, res) {
 
   const validPassword = await user.verifyPassword(req.body.password);
   if (!validPassword) {
-    return res
-      .status(400)
-      .json(
-        new ValidationError("wrong username or password, please try again"),
-      );
-  }
+    return res.status(400).json({
+      status: "fail",
+      message: "wrong username or password, please try again",
+    });
+  };
 
-  const token = jwt.sign({ userId: user._id }, process.env.SECRET, {
-    expiresIn: "1d",
-  });
-  return res.status(200).json({ token, user });
+  const token = jwt.sign(
+    { userId: user._id }, process.env.SECRET,
+    {
+      expiresIn: "1d",
+    },
+  );
+  res.cookie( "token", token, {
+    httpOnly: true,
+    secure:true,
+  })
+  return res.status(200).json({user});
 }
 
 export default { register, login };

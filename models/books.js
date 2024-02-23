@@ -19,7 +19,7 @@ const bookSchema = mongoose.Schema(
       default: "default.jpg",
     },
     authorId: {
-      type: String,
+      type: [{ type: String }],
       validate: {
         validator: async function isAuthorExist(v) {
           const author = await Author.find({ id: v });
@@ -29,7 +29,7 @@ const bookSchema = mongoose.Schema(
       },
     },
     categoryId: {
-      type: String,
+      type: [{ type: String }],
       required: true,
       validate: {
         validator: async function ifCategoryExist(v) {
