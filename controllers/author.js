@@ -34,7 +34,7 @@ async function create(req, res, next) {
       firstName,
       lastName,
       dateOfBirth,
-      imageUrl: req.file ? `/${req.file.path}` : defaultAuthorImage,
+      imageUrl: req.file ? req.file.path : defaultAuthorImage,
     }),
   );
 
@@ -113,7 +113,7 @@ async function updateAuthor(req, res, next) {
   const oldImageUrl = req.file ? author.imageUrl : undefined;
 
   if (req.file) {
-    author.imageUrl = `/${req.file.path}`;
+    author.imageUrl = req.file.path;
   }
 
   const [saveError, newAuthor] = await asyncWrapper(author.save());

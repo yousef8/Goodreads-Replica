@@ -10,7 +10,7 @@ async function create(req, res, next) {
   const [mongoerr, book] = await asyncWrapper(
     Book.create({
       ...req.book,
-      imageUrl: req.file ? `/${req.file.path}` : defaultBookImage,
+      imageUrl: req.file ? req.file.path : defaultBookImage,
     }),
   );
   if (!mongoerr) {
@@ -37,7 +37,7 @@ async function update(req, res, next) {
   let imageOldUrl;
   if (req.file) {
     imageOldUrl = book.imageUrl;
-    book.imageUrl = `/${req.file.path}`;
+    book.imageUrl = req.file.path;
   }
 
   const [saveError, newBook] = await asyncWrapper(book.save());
