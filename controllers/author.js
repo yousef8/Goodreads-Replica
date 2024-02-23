@@ -1,5 +1,4 @@
 import InternalError from "../errors/internalError.js";
-import ValidationError from "../errors/validationError.js";
 import Author from "../models/author.js";
 import asyncWrapper from "../utils/asyncWrapper.js";
 import deleteFile from "../utils/deleteFile.js";
@@ -9,25 +8,6 @@ const defaultAuthorImage =
 
 async function create(req, res, next) {
   const { firstName, lastName, dateOfBirth } = req.validReq;
-
-  // Check for duplicates
-  const [searchError, duplicateAuthor] = await asyncWrapper(
-    Author.findOne({ firstName, lastName }).exec(),
-  );
-  if (searchError) {
-    next(new InternalError(searchError.message));
-    return;
-  }
-
-  if (duplicateAuthor) {
-    next(
-      new ValidationError(
-        `Author with the same name "${firstName} ${lastName}" already exist`,
-      ),
-    );
-    return;
-  }
-  /// //////////////////////////////////////////////////////////
 
   const [createError, author] = await asyncWrapper(
     Author.create({
@@ -87,28 +67,6 @@ async function updateAuthor(req, res, next) {
   Object.entries(req.validReq).forEach(([key, value]) => {
     author[key] = value;
   });
-
-  // Check for duplicates
-  const [searchDuplicateError, duplicateAuthor] = await asyncWrapper(
-    Author.findOne({
-      firstName: author.firstName,
-      lastName: author.lastName,
-    }).exec(),
-  );
-  if (searchDuplicateError) {
-    next(new InternalError(searchDuplicateError.message));
-    return;
-  }
-
-  if (duplicateAuthor) {
-    next(
-      new ValidationError(
-        `Author with the same name "${author.firstName} ${author.lastName}" already exist`,
-      ),
-    );
-    return;
-  }
-  /// ////////////////////////////////////////
 
   const oldImageUrl = req.file ? author.imageUrl : undefined;
 

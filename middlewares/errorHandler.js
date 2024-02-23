@@ -45,9 +45,9 @@ async function errorHandler(err, req, res, next) {
     err.name === "MongoServerError" &&
     (err.code === 11000 || err.code === 11001)
   ) {
-    res
-      .status(400)
-      .json({ message: `Duplication Error: ${err.keyValue.name}` });
+    res.status(400).json({
+      message: `Duplication Error: ${err.keyValue.name || err.message}`,
+    });
     return;
   }
 

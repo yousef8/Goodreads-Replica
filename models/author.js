@@ -56,6 +56,7 @@ const authorSchema = new mongoose.Schema(
 );
 
 authorSchema.plugin(autoInc, { startAt: 1, digits: 1 });
+authorSchema.index({ firstName: 1, lastName: 1 }, { unique: true });
 
 const Author = mongoose.model("author", authorSchema);
 
