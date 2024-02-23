@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import CustomError from "../errors/customError.js";
 
 async function errorHandler(err, req, res, next) {
@@ -13,7 +14,7 @@ async function errorHandler(err, req, res, next) {
   }
 
   // Handle Mongoose Validation Error
-  if (err.name === "ValidationError") {
+  if (err instanceof mongoose.Error.ValidationError) {
     const errors = Object.entries(err.errors);
 
     res.status(400).json(
