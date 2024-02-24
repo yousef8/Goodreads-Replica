@@ -22,7 +22,7 @@ const bookSchema = mongoose.Schema(
       type: [{ type: String }],
       validate: {
         validator: async function isAuthorExist(v) {
-          const author = await Author.find({ id: v });
+          const author = await Author.findOne({ id: v });
           return author;
         },
         message: (props) => `${props.value} not found!`,
