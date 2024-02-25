@@ -19,7 +19,7 @@ const bookSchema = mongoose.Schema(
       default: "default.jpg",
     },
     authorId: {
-      type: [{ type: String }],
+      type: String,
       validate: {
         validator: async function isAuthorExist(v) {
           const author = await Author.findOne({ id: v });
@@ -29,7 +29,7 @@ const bookSchema = mongoose.Schema(
       },
     },
     categoryId: {
-      type: [{ type: String }],
+      type: String,
       required: true,
       validate: {
         validator: async function ifCategoryExist(v) {
@@ -72,5 +72,5 @@ bookSchema.plugin(autoInc, {
   incrementBy: 1,
   unique: true,
 });
-const books = mongoose.model("Books", bookSchema);
-export default books;
+const Book = mongoose.model("book", bookSchema);
+export default Book;

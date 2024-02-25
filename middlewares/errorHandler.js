@@ -1,7 +1,13 @@
 import mongoose from "mongoose";
 import CustomError from "../errors/customError.js";
+import deleteFile from "../utils/deleteFile.js";
 
 async function errorHandler(err, req, res, next) {
+  // Delete any file processed by mutler
+  if (req.file) {
+    deleteFile(req.file.path);
+  }
+
   // Handle Joi Schema Validation Error
   if (err.isJoi) {
     res.status(400).json(
@@ -45,9 +51,9 @@ async function errorHandler(err, req, res, next) {
     err.name === "MongoServerError" &&
     (err.code === 11000 || err.code === 11001)
   ) {
-    res
-      .status(400)
-      .json({ message: `Duplication Error: ${err.keyValue.name}` });
+    res.status(400).json({
+      message: `Duplication Error: ${err.keyValue.name || err.message}`,
+    });
     return;
   }
 
