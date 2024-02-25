@@ -8,15 +8,11 @@ const defaultBookImage =
 
 async function create(req, res, next) {
   const [mongoerr, book] = await asyncWrapper(
-    Book.create(
-      req.body,
-     /*  imageUrl: req.file ? req.file.path : defaultBookImage, */
-    ),
+    Book.create({
+      ...req.book,
+      imageUrl: req.file ? req.file.path : defaultBookImage,
+    }),
   );
-  console.log(typeof(req.body.authors))
-  console.log( book);
-  //book.authors.push(req.body.authors);
-  //book.save();
   if (!mongoerr) {
     return res.status(201).json(book);
   }
@@ -95,8 +91,11 @@ async function remove(req, res, next) {
 }
 
 async function getAll(req, res, next) {
+  const { categoryId } = req.query;
+  const query = categoryId ? { categoryId } : {};
+
   const [searchError, books] = await asyncWrapper(
-    Book.find()
+    Book.find(query)
       .populate({ path: "authors", model: "author", foreignField: "id" })
       .populate({ path: "categories", model: "category", foreignField: "id" })
       .exec(),
