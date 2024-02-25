@@ -6,7 +6,7 @@ import deleteFile from "../utils/deleteFile.js";
 const defaultBookImage =
   "https://api.dicebear.com/7.x/icons/svg?icon=book&backgroundColor=ffdfbf";
 
-async function create(req, res, next) {
+async function create ( req, res, next ) {
   const [mongoerr, book] = await asyncWrapper(
     Book.create({
       ...req.book,
@@ -52,8 +52,8 @@ async function update(req, res, next) {
 async function getBook(req, res, next) {
   const [searchError, book] = await asyncWrapper(
     Book.findOne({ id: req.params.id })
-      .populate({ path: "authorId", model: "author", foreignField: "id" })
-      .populate({ path: "categoryId", model: "category", foreignField: "id" })
+      .populate({ path: "author", model: "Author", foreignField: "id" })
+      .populate({ path: "category", model: "Category", foreignField: "id" })
       .exec(),
   );
 
@@ -96,8 +96,8 @@ async function getAll(req, res, next) {
 
   const [searchError, books] = await asyncWrapper(
     Book.find(query)
-      .populate({ path: "authorId", model: "author", foreignField: "id" })
-      .populate({ path: "categoryId", model: "category", foreignField: "id" })
+      .populate({ path: "author", model: "Author", foreignField: "id" })
+      .populate({ path: "category", model: "Category", foreignField: "id" })
       .exec(),
   );
 

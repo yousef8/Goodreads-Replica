@@ -4,6 +4,8 @@ import cors from "cors";
 import mongoose from "mongoose";
 import routes from "./routes/index.js";
 import errorHandler from "./middlewares/errorHandler.js";
+import cookieParser from "cookie-parser";
+
 
 const port = process.env.PORT || 5000;
 const corsOptions = {
@@ -15,7 +17,9 @@ const app = express();
 
 app.use(express.json());
 app.use("/images", express.static("images"));
-app.use(cors(corsOptions));
+app.use( cors( corsOptions ) );
+app.use( cookieParser() );
+
 
 app.use(routes);
 
