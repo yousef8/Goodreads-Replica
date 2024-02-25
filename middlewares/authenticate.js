@@ -4,7 +4,7 @@ import AuthenticationError from "../errors/authenticationError.js";
 import InternalError from "../errors/internalError.js";
 
 async function authenticate(req, res, next) {
-  const token = req.header("authorization");
+  const {token} = req.cookies;
   if (!token) {
     next(new AuthenticationError("No Token Exists"));
     return;
