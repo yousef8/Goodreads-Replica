@@ -53,7 +53,7 @@ async function getBook(req, res, next) {
   const [searchError, book] = await asyncWrapper(
     Book.findOne({ id: req.params.id })
       .populate({ path: "authorId", model: "author", foreignField: "id" })
-      .populate({ path: "categoryId", model: "Category", foreignField: "id" })
+      .populate({ path: "categoryId", model: "category", foreignField: "id" })
       .exec(),
   );
 
@@ -94,7 +94,7 @@ async function getAll(req, res, next) {
   const [searchError, books] = await asyncWrapper(
     Book.find()
       .populate({ path: "authorId", model: "author", foreignField: "id" })
-      .populate({ path: "categoryId", model: "Category", foreignField: "id" })
+      .populate({ path: "categoryId", model: "category", foreignField: "id" })
       .exec(),
   );
 

@@ -72,5 +72,5 @@ bookSchema.plugin(autoInc, {
   incrementBy: 1,
   unique: true,
 });
-const books = mongoose.model("Books", bookSchema);
-export default books;
+const Book = mongoose.model("book", bookSchema);
+export default Book;
