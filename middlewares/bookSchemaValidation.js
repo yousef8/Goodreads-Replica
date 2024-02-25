@@ -4,9 +4,9 @@ import asyncWrapper from "../utils/asyncWrapper.js";
 const validateCreate = async (req, res, next) => {
   const bookSchema = joi.object({
     name: joi.string().trim().required(),
-    image: joi.binary(),
-    authors: joi.array().required(),
-    categories: joi.array().required(),
+    imageUrl: joi.binary(),
+    author: joi.string().required(),
+    category: joi.string().required(),
   });
   const [err, validResult] = await asyncWrapper(
     bookSchema.validateAsync(req.body),
@@ -22,9 +22,9 @@ const validateCreate = async (req, res, next) => {
 const validateUpdate = async (req, res, next) => {
   const shcema = joi.object({
     name: joi.string().trim(),
-    image: joi.binary(),
-    authorId: joi.string(),
-    categoryId: joi.string(),
+    imageUrl: joi.binary(),
+    author: joi.string(),
+    category: joi.string(),
     rating: joi.number(),
     avgRating: joi.number(),
   });
