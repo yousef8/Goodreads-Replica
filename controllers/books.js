@@ -8,11 +8,15 @@ const defaultBookImage =
 
 async function create(req, res, next) {
   const [mongoerr, book] = await asyncWrapper(
-    Book.create({
-      ...req.book,
-      imageUrl: req.file ? req.file.path : defaultBookImage,
-    }),
+    Book.create(
+      req.body,
+     /*  imageUrl: req.file ? req.file.path : defaultBookImage, */
+    ),
   );
+  console.log(typeof(req.body.authors))
+  console.log( book);
+  //book.authors.push(req.body.authors);
+  //book.save();
   if (!mongoerr) {
     return res.status(201).json(book);
   }
@@ -52,8 +56,8 @@ async function update(req, res, next) {
 async function getBook(req, res, next) {
   const [searchError, book] = await asyncWrapper(
     Book.findOne({ id: req.params.id })
-      .populate({ path: "authorId", model: "author", foreignField: "id" })
-      .populate({ path: "categoryId", model: "category", foreignField: "id" })
+      .populate({ path: "authors", model: "author", foreignField: "id" })
+      .populate({ path: "categories", model: "category", foreignField: "id" })
       .exec(),
   );
 
@@ -93,8 +97,8 @@ async function remove(req, res, next) {
 async function getAll(req, res, next) {
   const [searchError, books] = await asyncWrapper(
     Book.find()
-      .populate({ path: "authorId", model: "author", foreignField: "id" })
-      .populate({ path: "categoryId", model: "category", foreignField: "id" })
+      .populate({ path: "authors", model: "author", foreignField: "id" })
+      .populate({ path: "categories", model: "category", foreignField: "id" })
       .exec(),
   );
 

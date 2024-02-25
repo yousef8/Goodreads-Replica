@@ -5,8 +5,8 @@ const validateCreate = async (req, res, next) => {
   const bookSchema = joi.object({
     name: joi.string().trim().required(),
     image: joi.binary(),
-    authorId: joi.string().required(),
-    categoryId: joi.string().required(),
+    authors: joi.array().required(),
+    categories: joi.array().required(),
   });
   const [err, validResult] = await asyncWrapper(
     bookSchema.validateAsync(req.body),

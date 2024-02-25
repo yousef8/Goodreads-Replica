@@ -18,26 +18,16 @@ const bookSchema = mongoose.Schema(
       type: String,
       default: "default.jpg",
     },
-    authorId: {
-      type: String,
-      validate: {
-        validator: async function isAuthorExist(v) {
-          const author = await Author.findOne({ id: v });
-          return author;
-        },
-        message: (props) => `${props.value} not found!`,
+    authors:{
+      type: [ {
+        type:String,
+        }],
       },
-    },
-    categoryId: {
-      type: String,
+    categories: {
+      type: [ {
+        type:String,
+      }],
       required: true,
-      validate: {
-        validator: async function ifCategoryExist(v) {
-          const category = await Category.findOne({ id: v });
-          return category;
-        },
-        message: (props) => `id ${props.value} not found!`,
-      },
     },
     rating: {
       type: Number,
@@ -71,6 +61,6 @@ bookSchema.plugin(autoInc, {
   startAt: 1,
   incrementBy: 1,
   unique: true,
-});
+} );
 const Book = mongoose.model("book", bookSchema);
-export default Book;
+export default Book; 
