@@ -51,7 +51,10 @@ async function update(req, res, next) {
 
 async function getBook(req, res, next) {
   const [searchError, book] = await asyncWrapper(
-    Book.findOne({ id: req.params.id }).exec(),
+    Book.findOne({ id: req.params.id })
+      .populate({ path: "authorId", model: "author", foreignField: "id" })
+      .populate({ path: "categoryId", model: "Category", foreignField: "id" })
+      .exec(),
   );
 
   if (searchError) {
@@ -88,7 +91,12 @@ async function remove(req, res, next) {
 }
 
 async function getAll(req, res, next) {
-  const [searchError, books] = await asyncWrapper(Book.find().exec());
+  const [searchError, books] = await asyncWrapper(
+    Book.find()
+      .populate({ path: "authorId", model: "author", foreignField: "id" })
+      .populate({ path: "categoryId", model: "Category", foreignField: "id" })
+      .exec(),
+  );
 
   if (searchError) {
     next(new InternalError(searchError.message));
