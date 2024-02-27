@@ -121,12 +121,22 @@ userSchema.methods.verifyPassword = async function verifyPassword(password) {
 };
 
 userSchema.statics.createDefaultAdmin = async function createDefaultAdmin() {
-  const [error] = await asyncWrapper(
+  const username = process.env.DEFAULT_ADMIN_USERNAME;
+  const [hashError, password] = await asyncWrapper(
+    bcrypt.hash(process.env.DEFAULT_ADMIN_PASSWORD, 10),
+  );
+
+  if (hashError) {
+    console.log("Couldn't hash the password", hashError);
+    return;
+  }
+
+  const [createError] = await asyncWrapper(
     this.findOneAndUpdate(
-      { username: "admin" },
+      { username },
       {
-        username: "admin",
-        password: "admin",
+        username,
+        password,
         email: "admin@local.com",
         isAdmin: true,
       },
@@ -134,11 +144,12 @@ userSchema.statics.createDefaultAdmin = async function createDefaultAdmin() {
     ).exec(),
   );
 
-  if (error) {
-    console.log("Couldn't create default admin user");
+  if (createError) {
+    console.log("Couldn't create default admin user", createError);
     return;
   }
-  console.log("Create default admin user");
+
+  console.log("Created default admin user");
 };
 
 const User = mongoose.model("user", userSchema);
