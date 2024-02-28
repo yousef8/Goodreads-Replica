@@ -36,5 +36,5 @@ categorySchema.plugin(autoInc, {
   unique: true,
 });
 
-const Category = mongoose.model("category", categorySchema);
+const Category = mongoose.model("Category", categorySchema);
 export default Category;

@@ -11,7 +11,7 @@ router.post(
   "/",
   authenticate,
   authorizeAdmin,
-  upload.single("imageUrl"),
+  upload.single("image"),
   bookValidation.validateCreate,
   booksCtrler.create,
 );

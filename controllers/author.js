@@ -3,8 +3,7 @@ import Author from "../models/author.js";
 import asyncWrapper from "../utils/asyncWrapper.js";
 import deleteFile from "../utils/deleteFile.js";
 
-const defaultAuthorImage =
-  "https://api.dicebear.com/7.x/big-ears/svg?seed=Oscar&backgroundColor=ffdfbf";
+const defaultAuthorImage = "images/authorDefaultImage.svg";
 
 async function create(req, res, next) {
   const { firstName, lastName, dateOfBirth } = req.validReq;
@@ -44,6 +43,11 @@ async function getAuthor(req, res, next) {
 
   if (searchError) {
     next(new InternalError(searchError.message));
+  }
+
+  if (!author) {
+    res.status(404).json({});
+    return;
   }
 
   res.json(author || {});

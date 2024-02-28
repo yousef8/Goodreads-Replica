@@ -131,4 +131,6 @@ dist
 
 
 # Project Specific
-images/
+images/*
+!images/authorDefaultImage.svg
+!images/bookDefaultImage.svg
