@@ -45,6 +45,11 @@ async function getAuthor(req, res, next) {
     next(new InternalError(searchError.message));
   }
 
+  if (!author) {
+    res.status(404).json({});
+    return;
+  }
+
   res.json(author || {});
 }
 
