@@ -6,10 +6,13 @@ import deleteFile from "../utils/deleteFile.js";
 const defaultBookImage =
   "https://api.dicebear.com/7.x/icons/svg?icon=book&backgroundColor=ffdfbf";
 
-async function create ( req, res, next ) {
+async function create(req, res, next) {
+  const { name, authorId: author, categoryId: category } = req.book;
   const [mongoerr, book] = await asyncWrapper(
     Book.create({
-      ...req.book,
+      name,
+      author,
+      category,
       imageUrl: req.file ? req.file.path : defaultBookImage,
     }),
   );
@@ -30,15 +33,18 @@ async function update(req, res, next) {
     return res.status(404).json({});
   }
 
-  Object.entries(req.book).forEach(([key, value]) => {
-    book[key] = value;
-  });
+  const { authorId, categoryId, ...rest } = req.book;
+  if (authorId) book.author = authorId;
+  if (categoryId) book.category = categoryId;
+  Object.assign(book, rest);
 
   let imageOldUrl;
+  console.log(req.file);
   if (req.file) {
     imageOldUrl = book.imageUrl;
     book.imageUrl = req.file.path;
   }
+  console.log(book);
 
   const [saveError, newBook] = await asyncWrapper(book.save());
 
