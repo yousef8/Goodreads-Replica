@@ -4,8 +4,11 @@ import asyncWrapper from "../utils/asyncWrapper.js";
 import ValidationError from "../errors/validationError.js";
 
 async function register(req, res, next) {
+  const { file } = req; 
+  const imageData = file ? { imageUrl: file.filename } : {}; 
+
   const [mongooseError, user] = await asyncWrapper(
-    new User(req.validReq).save(),
+    new User({ ...req.validReq, ...imageData }).save(),
   );
 
   if (mongooseError) {
