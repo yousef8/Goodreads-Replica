@@ -3,8 +3,7 @@ import asyncWrapper from "../utils/asyncWrapper.js";
 import InternalError from "../errors/internalError.js";
 import deleteFile from "../utils/deleteFile.js";
 
-const defaultBookImage =
-  "https://api.dicebear.com/7.x/icons/svg?icon=book&backgroundColor=ffdfbf";
+const defaultBookImage = "images/bookDefaultImage.svg";
 
 async function create(req, res, next) {
   const { name, authorId: author, categoryId: category } = req.book;
