@@ -152,7 +152,7 @@ userSchema.statics.createDefaultAdmin = async function createDefaultAdmin() {
   console.log("Created default admin user");
 };
 
-const User = mongoose.model("user", userSchema);
+const User = mongoose.model("User", userSchema);
 User.createDefaultAdmin();
 
 export default User;
