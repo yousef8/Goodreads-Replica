@@ -8,7 +8,7 @@ import upload from "../middlewares/multerConfig.js";
 const router = Router();
 
 router.post(
-  "/authors",
+  "/",
   authenticate,
   authorizeAdmin,
   upload.single("image"),
@@ -16,12 +16,12 @@ router.post(
   authorCtrler.create,
 );
 
-router.get("/authors", authorCtrler.getAuthors);
+router.get("/", authorCtrler.getAuthors);
 
-router.get("/authors/:id", authorCtrler.getAuthor);
+router.get("/:id", authorCtrler.getAuthor);
 
 router.patch(
-  "/authors/:id",
+  "/:id",
   authenticate,
   authorizeAdmin,
   upload.single("image"),
@@ -29,11 +29,6 @@ router.patch(
   authorCtrler.updateAuthor,
 );
 
-router.delete(
-  "/authors/:id",
-  authenticate,
-  authorizeAdmin,
-  authorCtrler.deleteAuthor,
-);
+router.delete("/:id", authenticate, authorizeAdmin, authorCtrler.deleteAuthor);
 
 export default router;
