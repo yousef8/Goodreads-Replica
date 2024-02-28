@@ -96,15 +96,20 @@ async function remove(req, res, next) {
 }
 
 async function getAll(req, res, next) {
-  const { categoryId } = req.query;
+  const { categoryId, page = 1, limit = 10 } = req.query;
   const query = {
     ...(categoryId && { category: categoryId }),
   };
+
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
 
   const [searchError, books] = await asyncWrapper(
     Book.find(query)
       .populate({ path: "author", model: "Author", foreignField: "id" })
       .populate({ path: "category", model: "Category", foreignField: "id" })
+      .skip(startIndex)
+      .limit(limit)
       .exec(),
   );
 
@@ -113,8 +118,18 @@ async function getAll(req, res, next) {
     return;
   }
 
-  res.status(200).json(books);
+  const totalBooks = await Book.countDocuments(query);
+
+  const pagination = {
+    currentPage: parseInt(page),
+    totalPages: Math.ceil(totalBooks / limit),
+    totalItems: totalBooks,
+    itemsPerPage: parseInt(limit)
+  };
+
+  res.status(200).json({ books, pagination });
 }
+
 
 export default {
   create,
