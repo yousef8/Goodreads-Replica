@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import uniqueValidator from "mongoose-unique-validator";
 import asyncWrapper from "../utils/asyncWrapper.js";
-
 const userSchema = new mongoose.Schema(
   {
     firstName: {
@@ -66,6 +65,10 @@ const userSchema = new mongoose.Schema(
         message: (props) =>
           `${props.value} invalid password, Minimum 8 characters, at least 1 upper case letter, 1 lower case letter, 1 number and 1 special character`,
       },
+    },
+    imageUrl: {
+      type: String,
+      default: "default.jpg",
     },
     isAdmin: {
       type: Boolean,
