@@ -98,7 +98,9 @@ async function remove(req, res, next) {
 
 async function getAll(req, res, next) {
   const { categoryId } = req.query;
-  const query = categoryId ? { categoryId } : {};
+  const query = {
+    ...(categoryId && { category: categoryId }),
+  };
 
   const [searchError, books] = await asyncWrapper(
     Book.find(query)
