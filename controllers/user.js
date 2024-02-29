@@ -62,11 +62,6 @@ async function addBookToUser(req, res, next) {
   }
 
   try {
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(400).json({ message: "User not found" });
-    }
-
     const book = await Book.findOne({ id: bookId });
     if (!book) {
       return res.status(400).json({ message: "Book not found" });
