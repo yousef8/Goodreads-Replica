@@ -134,3 +134,4 @@ dist
 images/*
 !images/authorDefaultImage.svg
 !images/bookDefaultImage.svg
+!images/userDefaultImage.svg
