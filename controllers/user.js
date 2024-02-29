@@ -54,7 +54,12 @@ async function login(req, res) {
 async function addBookToUser(req, res, next) {
   const userId = req.user._id;
   const { bookId } = req.body;
-  const { shelf, rating } = req.query;
+  const { shelf } = req.query;
+
+  const allowedShelves = ["currentlyReading", "wantToRead", "read"];
+  if (!allowedShelves.includes(shelf)) {
+    return res.status(400).json({ message: "Invalid shelf value" });
+  }
 
   try {
     const user = await User.findById(userId);
@@ -67,21 +72,19 @@ async function addBookToUser(req, res, next) {
       return res.status(400).json({ message: "Book not found" });
     }
 
-    const allowedShelves = ["currentlyReading", "wantToRead", "read"];
-    if (!allowedShelves.includes(shelf)) {
-      return res.status(400).json({ message: "Invalid shelf value" });
-    }
-
-    const updateRes = await User.updateOne(
-      { _id: req.user._id },
-      {
-        shelve: shelf,
-        rating,
-        book: bookId,
+    await User.findByIdAndUpdate(req.user._id, {
+      $pull: {
+        books: {
+          book: bookId,
+        },
       },
-    ).exec();
+    });
 
-    console.log(updateRes);
+    await User.findByIdAndUpdate(req.user._id, {
+      $push: {
+        books: { book: bookId, shelf },
+      },
+    }).exec();
 
     return res.status(201).json({});
   } catch (error) {
