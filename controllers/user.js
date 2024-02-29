@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/user.js";
 import asyncWrapper from "../utils/asyncWrapper.js";
 import ValidationError from "../errors/validationError.js";
+import Book from "../models/books.js";
 
 async function register(req, res, next) {
   const [mongooseError, user] = await asyncWrapper(

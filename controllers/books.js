@@ -3,13 +3,15 @@ import asyncWrapper from "../utils/asyncWrapper.js";
 import InternalError from "../errors/internalError.js";
 import deleteFile from "../utils/deleteFile.js";
 
-const defaultBookImage =
-  "https://api.dicebear.com/7.x/icons/svg?icon=book&backgroundColor=ffdfbf";
+const defaultBookImage = "images/bookDefaultImage.svg";
 
-async function create ( req, res, next ) {
+async function create(req, res, next) {
+  const { name, authorId: author, categoryId: category } = req.book;
   const [mongoerr, book] = await asyncWrapper(
     Book.create({
-      ...req.book,
+      name,
+      author,
+      category,
       imageUrl: req.file ? req.file.path : defaultBookImage,
     }),
   );
@@ -30,15 +32,18 @@ async function update(req, res, next) {
     return res.status(404).json({});
   }
 
-  Object.entries(req.book).forEach(([key, value]) => {
-    book[key] = value;
-  });
+  const { authorId, categoryId, ...rest } = req.book;
+  if (authorId) book.author = authorId;
+  if (categoryId) book.category = categoryId;
+  Object.assign(book, rest);
 
   let imageOldUrl;
+  console.log(req.file);
   if (req.file) {
     imageOldUrl = book.imageUrl;
     book.imageUrl = req.file.path;
   }
+  console.log(book);
 
   const [saveError, newBook] = await asyncWrapper(book.save());
 
@@ -92,7 +97,9 @@ async function remove(req, res, next) {
 
 async function getAll(req, res, next) {
   const { categoryId } = req.query;
-  const query = categoryId ? { categoryId } : {};
+  const query = {
+    ...(categoryId && { category: categoryId }),
+  };
 
   const [searchError, books] = await asyncWrapper(
     Book.find(query)

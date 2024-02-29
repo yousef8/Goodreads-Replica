@@ -11,6 +11,6 @@ router.use("/users", userRouter);
 router.use("/books", booksRouter);
 router.use("/categories", categoryRouter);
 router.use("/admin", adminRouter);
-router.use(authorRouter);
+router.use("/authors", authorRouter);
 
 export default router;
