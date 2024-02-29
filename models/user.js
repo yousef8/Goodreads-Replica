@@ -71,18 +71,23 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    read: {
-      type: [mongoose.ObjectId],
-      ref: "book",
-    },
-    currentlyReading: {
-      type: [mongoose.ObjectId],
-      ref: "book",
-    },
-    wantToRead: {
-      type: [mongoose.ObjectId],
-      ref: "book",
-    },
+    books: [
+      {
+        shelve: {
+          type: String,
+          enum: ["currentlyReading", "wantToRead", "read"],
+        },
+        rating: {
+          type: Number,
+          min: 0,
+          max: 5,
+          default: 0,
+        },
+        book: {
+          type: String,
+        },
+      },
+    ],
   },
   {
     timestamps: true,
