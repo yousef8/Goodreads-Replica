@@ -73,14 +73,14 @@ const userSchema = new mongoose.Schema(
     },
     books: [
       {
-        shelve: {
+        shelf: {
           type: String,
           enum:["currentlyReading","wantToRead","read"]
           
         },
         rating: {
           type: Number,
-          min: 0,
+          min: 1,
           max: 5,
           default: 0,
         },
@@ -119,6 +119,7 @@ userSchema.pre("save", async function preSaveHook() {
   if (this.isModified("password")) {
     this.password = await bcrypt.hash(this.password, 10);
   }
+  console.log(this.isModified("books.rating"))
 });
 
 userSchema.methods.verifyPassword = async function verifyPassword(password) {

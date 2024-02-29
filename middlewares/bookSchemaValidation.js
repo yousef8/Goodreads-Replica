@@ -25,7 +25,6 @@ const validateUpdate = async (req, res, next) => {
     image: joi.binary(),
     authorId: joi.string(),
     categoryId: joi.string(),
-    rating: joi.number(),
     avgRating: joi.number(),
   });
   const [validationErr, validRes] = await asyncWrapper(
