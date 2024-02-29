@@ -4,9 +4,10 @@ import adminRouter from "./admin.js";
 import booksRouter from "./books.js";
 import categoryRouter from "./category.js";
 import authorRouter from "./author.js";
+
 const router = express.Router();
 
-router.use("/user", userRouter);
+router.use("/users", userRouter);
 router.use("/books", booksRouter);
 router.use("/categories", categoryRouter);
 router.use("/admin", adminRouter);
