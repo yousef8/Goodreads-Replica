@@ -11,8 +11,8 @@ const bookSchema = mongoose.Schema(
       type: String,
       unique: true,
       required: true,
-      minLength: [2, "Name must be at least 2 characters long"],
-      maxLength: [50, "Name cannot exceed 50 characters"],
+      minLength: [ 2, "Name must be at least 2 characters long" ],
+      maxLength: [ 50, "Name cannot exceed 50 characters" ],
     },
     imageUrl: {
       type: String,
@@ -22,13 +22,13 @@ const bookSchema = mongoose.Schema(
       type: String,
       required: true,
       validate: {
-          validator: async function isAuthorExist ( v ) {
-              const author = await Author.findOne( { id: v} );
-              return author;
-            }
-        },
-          message: (props) => `${props.value} not found!`,
-        },
+        validator: async function isAuthorExist ( v ) {
+          const author = await Author.findOne( { id: v } );
+          return author;
+        }
+      },
+      message: ( props ) => `${ props.value } not found!`,
+    },
     category: {
       type: String,
       required: true,
@@ -40,19 +40,21 @@ const bookSchema = mongoose.Schema(
         message: ( props ) => `id ${ props.value } not found!`,
       }
     },
-    rating: {
+  avgRating: {
+    ratings: {
       type: Number,
-      min: 0,
-      max: 5,
       default: 0,
     },
-    avgRating: {
+    rateValue: {
       type: Number,
-      min: 0,
-      max: 5,
+      default: 0,
+    },
+    sumRatings: {
+      type: Number,
       default: 0,
     },
   },
+    },
   {
     new: true,
     timeStamps: true,

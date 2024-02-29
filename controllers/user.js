@@ -36,10 +36,10 @@ async function login(req, res) {
       );
   }
 
-  const token = jwt.sign({ userId: user._id }, process.env.SECRET, {
+  const token = jwt.sign({ userId: user._id , isAdmin:user.isAdmin}, process.env.SECRET, {
     expiresIn: "1d",
   });
-  return res.status(200).json({ token, user });
+  return res.status(200).json({ token });
 }
 
 async function addBookToUser(req, res, next) {
@@ -156,9 +156,63 @@ async function removeUserBook(req, res, next) {
   }
 }
 
+
+async function rateBook ( req, res, next ) {
+  let [ mongooseError, bookInUser ] = await asyncWrapper( User.findOneAndUpdate(
+    { _id: req.user._id, "books.book": req.body.bookId },
+    {
+      $set: {
+        "books.$.rating": req.body.rating,
+      },
+    },
+    { new: true }
+  ), );
+  console.log( bookInUser );
+  if (!bookInUser) {
+    [mongooseError, bookInUser] = await asyncWrapper( User.findByIdAndUpdate(
+      { _id: req.user._id },
+      {
+        $push: {
+          books: {
+            rating: req.body.rating,
+            book: req.body.bookId,
+          },
+        },
+      },
+      { new: true },
+    ));
+  }
+  const [ err, book ] = await asyncWrapper( Book.findOne( { id: req.body.bookId } ) );
+  if ( err )
+    return next( err );
+  if ( !book ) {
+    next( new ValidationError( `no book with id :${ req.body.bookId }` ) );
+    return;
+  }
+  const updatedBook = await Book.findOneAndUpdate(
+    { id: req.body.bookId },
+    {
+      $set: {
+        avgRating: {
+          ratings: book.avgRating.ratings + 1,
+          rateValue:
+            (book.avgRating.rateValue + req.body.rating) /
+            (book.avgRating.ratings + 1),
+          sumRatings: book.avgRating.sumRatings + req.body.rating,
+        },
+      },
+    },
+  );
+  if ( !mongooseError )
+    return res.status( 200 ).json( bookInUser );
+  return next( mongooseError );
+  
+}
+
 export default {
   register,
   login,
+  rateBook,
   addBookToUser,
   retrieveUserBooks,
   updateUserBook,

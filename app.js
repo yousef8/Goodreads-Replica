@@ -11,11 +11,12 @@ const corsOptions = {
   credentials: true,
   optionSuccessStatus: 200,
 };
+
 const app = express();
 
+app.use(cors(corsOptions)); 
 app.use(express.json());
 app.use("/images", express.static("images"));
-app.use(cors(corsOptions));
 
 app.use(routes);
 
