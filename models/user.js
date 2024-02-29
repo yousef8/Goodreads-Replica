@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import uniqueValidator from "mongoose-unique-validator";
 import asyncWrapper from "../utils/asyncWrapper.js";
-
+import Book from "./books.js"
 const userSchema = new mongoose.Schema(
   {
     firstName: {
@@ -73,6 +73,7 @@ const userSchema = new mongoose.Schema(
     },
     books: [
       {
+        _id: false,
         shelf: {
           type: String,
           enum:["currentlyReading","wantToRead","read"]
@@ -87,7 +88,7 @@ const userSchema = new mongoose.Schema(
         book: {
           type: String,
         },
-      }
+      },
     ]
   },
   {
@@ -119,8 +120,7 @@ userSchema.pre("save", async function preSaveHook() {
   if (this.isModified("password")) {
     this.password = await bcrypt.hash(this.password, 10);
   }
-  console.log(this.isModified("books.rating"))
-});
+} );
 
 userSchema.methods.verifyPassword = async function verifyPassword(password) {
   const valid = await bcrypt.compare(password.toString(), this.password);
@@ -161,5 +161,7 @@ userSchema.statics.createDefaultAdmin = async function createDefaultAdmin() {
 
 const User = mongoose.model("User", userSchema);
 User.createDefaultAdmin();
+
+
 
 export default User;

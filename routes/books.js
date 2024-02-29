@@ -18,6 +18,7 @@ router.post(
 router.patch(
   "/:id",
   authenticate,
+  authorizeAdmin,
   upload.single("image"),
   bookValidation.validateUpdate,
   booksCtrler.update,

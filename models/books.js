@@ -18,7 +18,7 @@ const bookSchema = mongoose.Schema(
       type: String,
       default: "default.jpg",
     },
-    authorId: {
+    author: {
       type: String,
       required: true,
       validate: {
@@ -29,7 +29,7 @@ const bookSchema = mongoose.Schema(
       },
       message: ( props ) => `${ props.value } not found!`,
     },
-    categoryId: {
+    category: {
       type: String,
       required: true,
       validate: {
@@ -52,7 +52,7 @@ const bookSchema = mongoose.Schema(
     sumRatings: {
       type: Number,
       default: 0,
-    }
+    },
   },
     },
   {
