@@ -75,8 +75,7 @@ const userSchema = new mongoose.Schema(
       {
         shelve: {
           type: String,
-          enum:["currentlyReading","wantToRead","read"]
-          
+          enum: ["currentlyReading", "wantToRead", "read"],
         },
         rating: {
           type: Number,
@@ -87,8 +86,8 @@ const userSchema = new mongoose.Schema(
         book: {
           type: String,
         },
-      }
-    ]
+      },
+    ],
   },
   {
     timestamps: true,
