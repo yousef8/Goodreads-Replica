@@ -72,13 +72,16 @@ async function addBookToUser(req, res, next) {
       return res.status(400).json({ message: "Invalid shelf value" });
     }
 
-    user.books.push({
-      shelve: shelf,
-      rating,
-      book: bookId,
-    });
+    const updateRes = await User.updateOne(
+      { _id: req.user._id },
+      {
+        shelve: shelf,
+        rating,
+        book: bookId,
+      },
+    ).exec();
 
-    await user.save();
+    console.log(updateRes);
 
     return res.status(201).json({});
   } catch (error) {

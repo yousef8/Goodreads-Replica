@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import uniqueValidator from "mongoose-unique-validator";
 import asyncWrapper from "../utils/asyncWrapper.js";
+
 const userSchema = new mongoose.Schema(
   {
     firstName: {
@@ -87,7 +88,7 @@ const userSchema = new mongoose.Schema(
           type: String,
         },
       },
-    ]
+    ],
   },
   {
     timestamps: true,
@@ -106,19 +107,11 @@ const userSchema = new mongoose.Schema(
 
 userSchema.plugin(uniqueValidator);
 
-userSchema.pre("validate", function sanitizeInput() {
-  this.firstName = this.firstName.trim();
-  this.lastName = this.lastName.trim();
-  this.username = this.username.trim();
-  this.email = this.email.trim();
-  this.password = this.password.trim();
-});
-
 userSchema.pre("save", async function preSaveHook() {
   if (this.isModified("password")) {
     this.password = await bcrypt.hash(this.password, 10);
   }
-} );
+});
 
 userSchema.methods.verifyPassword = async function verifyPassword(password) {
   const valid = await bcrypt.compare(password.toString(), this.password);
@@ -159,7 +152,5 @@ userSchema.statics.createDefaultAdmin = async function createDefaultAdmin() {
 
 const User = mongoose.model("User", userSchema);
 User.createDefaultAdmin();
-
-
 
 export default User;
