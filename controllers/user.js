@@ -4,9 +4,14 @@ import asyncWrapper from "../utils/asyncWrapper.js";
 import ValidationError from "../errors/validationError.js";
 import Book from "../models/books.js";
 
+const defaultUserImage = "images/userDefaultImage.svg";
+
 async function register(req, res, next) {
   const [mongooseError, user] = await asyncWrapper(
-    new User(req.validReq).save(),
+    new User({
+      ...req.validReq,
+      imageUrl: req.file ? req.file.path : defaultUserImage,
+    }).save(),
   );
 
   if (mongooseError) {
@@ -36,9 +41,13 @@ async function login(req, res) {
       );
   }
 
-  const token = jwt.sign({ userId: user._id , isAdmin:user.isAdmin}, process.env.SECRET, {
-    expiresIn: "1d",
-  });
+  const token = jwt.sign(
+    { userId: user._id, isAdmin: user.isAdmin },
+    process.env.SECRET,
+    {
+      expiresIn: "1d",
+    },
+  );
   return res.status(200).json({ token });
 }
 
@@ -156,37 +165,39 @@ async function removeUserBook(req, res, next) {
   }
 }
 
-
-async function rateBook ( req, res, next ) {
-  let [ mongooseError, bookInUser ] = await asyncWrapper( User.findOneAndUpdate(
-    { _id: req.user._id, "books.book": req.body.bookId },
-    {
-      $set: {
-        "books.$.rating": req.body.rating,
-      },
-    },
-    { new: true }
-  ), );
-  console.log( bookInUser );
-  if (!bookInUser) {
-    [mongooseError, bookInUser] = await asyncWrapper( User.findByIdAndUpdate(
-      { _id: req.user._id },
+async function rateBook(req, res, next) {
+  let [mongooseError, bookInUser] = await asyncWrapper(
+    User.findOneAndUpdate(
+      { _id: req.user._id, "books.book": req.body.bookId },
       {
-        $push: {
-          books: {
-            rating: req.body.rating,
-            book: req.body.bookId,
-          },
+        $set: {
+          "books.$.rating": req.body.rating,
         },
       },
       { new: true },
-    ));
+    ),
+  );
+  console.log(bookInUser);
+  if (!bookInUser) {
+    [mongooseError, bookInUser] = await asyncWrapper(
+      User.findByIdAndUpdate(
+        { _id: req.user._id },
+        {
+          $push: {
+            books: {
+              rating: req.body.rating,
+              book: req.body.bookId,
+            },
+          },
+        },
+        { new: true },
+      ),
+    );
   }
-  const [ err, book ] = await asyncWrapper( Book.findOne( { id: req.body.bookId } ) );
-  if ( err )
-    return next( err );
-  if ( !book ) {
-    next( new ValidationError( `no book with id :${ req.body.bookId }` ) );
+  const [err, book] = await asyncWrapper(Book.findOne({ id: req.body.bookId }));
+  if (err) return next(err);
+  if (!book) {
+    next(new ValidationError(`no book with id :${req.body.bookId}`));
     return;
   }
   const updatedBook = await Book.findOneAndUpdate(
@@ -203,10 +214,8 @@ async function rateBook ( req, res, next ) {
       },
     },
   );
-  if ( !mongooseError )
-    return res.status( 200 ).json( bookInUser );
-  return next( mongooseError );
-  
+  if (!mongooseError) return res.status(200).json(bookInUser);
+  return next(mongooseError);
 }
 
 export default {
