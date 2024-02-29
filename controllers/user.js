@@ -93,19 +93,17 @@ async function addBookToUser(req, res, next) {
 }
 
 async function retrieveUserBooks(req, res, next) {
-  const userId = req.user._id;
   const { shelf } = req.query;
 
   try {
-    const user = await User.findById(userId, "books");
-
     let query;
     if (shelf && shelf.toLowerCase() !== "all") {
-      console.log(user.books);
-      const filteredBooks = user.books.filter((book) => book.shelve === shelf);
+      const filteredBooks = req.user.books.filter(
+        (book) => book.shelf === shelf,
+      );
       query = { books: filteredBooks };
     } else {
-      query = { books: user.books };
+      query = { books: req.user.books };
     }
 
     const queryModel = new User({ books: query.books });
