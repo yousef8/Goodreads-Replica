@@ -176,6 +176,7 @@ async function rateBook(req, res, next) {
       { new: true },
     ),
   );
+  console.log(bookInUser);
   if (!bookInUser) {
     [mongooseError, bookInUser] = await asyncWrapper(
       User.findByIdAndUpdate(
@@ -198,16 +199,18 @@ async function rateBook(req, res, next) {
     next(new ValidationError(`no book with id :${req.body.bookId}`));
     return;
   }
-  const updatedBook = await Book.findOneAndUpdate(
-    { id: req.body.bookId },
-    {
-      $set: {
-        avgRating: {
-          ratings: book.avgRating.ratings + 1,
-          rateValue:
-            (book.avgRating.sumRatings + req.body.rating ) /
-            (book.avgRating.ratings + 1),
-          sumRatings: book.avgRating.sumRatings + req.body.rating,
+  const [updateError, updatedBook] = await asyncWrapper(
+    Book.findOneAndUpdate(
+      { id: req.body.bookId },
+      {
+        $set: {
+          avgRating: {
+            ratings: book.avgRating.ratings + 1,
+            rateValue:
+              (book.avgRating.rateValue + req.body.rating) /
+              (book.avgRating.ratings + 1),
+            sumRatings: book.avgRating.sumRatings + req.body.rating,
+          },
         },
       },
     ),
