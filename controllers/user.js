@@ -199,22 +199,31 @@ async function rateBook(req, res, next) {
     next(new ValidationError(`no book with id :${req.body.bookId}`));
     return;
   }
-  const updatedBook = await Book.findOneAndUpdate(
-    { id: req.body.bookId },
-    {
-      $set: {
-        avgRating: {
-          ratings: book.avgRating.ratings + 1,
-          rateValue:
-            (book.avgRating.rateValue + req.body.rating) /
-            (book.avgRating.ratings + 1),
-          sumRatings: book.avgRating.sumRatings + req.body.rating,
+  const [updateError, updatedBook] = await asyncWrapper(
+    Book.findOneAndUpdate(
+      { id: req.body.bookId },
+      {
+        $set: {
+          avgRating: {
+            ratings: book.avgRating.ratings + 1,
+            rateValue:
+              (book.avgRating.rateValue + req.body.rating) /
+              (book.avgRating.ratings + 1),
+            sumRatings: book.avgRating.sumRatings + req.body.rating,
+          },
         },
       },
-    },
+    ),
   );
+
+  if (updateError) {
+    console.log(updateError);
+    next(updateError);
+    return;
+  }
+
   if (!mongooseError) return res.status(200).json(bookInUser);
-  return next(mongooseError);
+  next(mongooseError);
 }
 
 export default {
