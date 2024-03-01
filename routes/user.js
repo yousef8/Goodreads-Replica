@@ -9,6 +9,8 @@ import upload from "../middlewares/multerConfig.js";
 
 const router = express.Router();
 
+router.get("/", authenticate, userCtrlr.getUser);
+
 router.post(
   "/",
   validateUserRegisterReq,

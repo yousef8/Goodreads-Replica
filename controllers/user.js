@@ -226,6 +226,10 @@ async function rateBook(req, res, next) {
   next(mongooseError);
 }
 
+async function getUser(req, res) {
+  res.json(req.user);
+}
+
 export default {
   register,
   login,
@@ -234,4 +238,5 @@ export default {
   retrieveUserBooks,
   updateUserBook,
   removeUserBook,
+  getUser,
 };
