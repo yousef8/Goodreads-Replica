@@ -176,7 +176,6 @@ async function rateBook(req, res, next) {
       { new: true },
     ),
   );
-  console.log(bookInUser);
   if (!bookInUser) {
     [mongooseError, bookInUser] = await asyncWrapper(
       User.findByIdAndUpdate(
@@ -207,7 +206,7 @@ async function rateBook(req, res, next) {
           avgRating: {
             ratings: book.avgRating.ratings + 1,
             rateValue:
-              (book.avgRating.rateValue + req.body.rating) /
+              (book.avgRating.sumRatings + req.body.rating) /
               (book.avgRating.ratings + 1),
             sumRatings: book.avgRating.sumRatings + req.body.rating,
           },
