@@ -4,9 +4,14 @@ import asyncWrapper from "../utils/asyncWrapper.js";
 import ValidationError from "../errors/validationError.js";
 import Book from "../models/books.js";
 
+const defaultUserImage = "images/userDefaultImage.svg";
+
 async function register(req, res, next) {
   const [mongooseError, user] = await asyncWrapper(
-    new User(req.validReq).save(),
+    new User({
+      ...req.validReq,
+      imageUrl: req.file ? req.file.path : defaultUserImage,
+    }).save(),
   );
 
   if (mongooseError) {
@@ -36,40 +41,45 @@ async function login(req, res) {
       );
   }
 
-  const token = jwt.sign({ userId: user._id , isAdmin:user.isAdmin}, process.env.SECRET, {
-    expiresIn: "1d",
-  });
+  const token = jwt.sign(
+    { userId: user._id, isAdmin: user.isAdmin },
+    process.env.SECRET,
+    {
+      expiresIn: "1d",
+    },
+  );
   return res.status(200).json({ token });
 }
 
 async function addBookToUser(req, res, next) {
   const userId = req.user._id;
   const { bookId } = req.body;
-  const { shelf, rating } = req.query;
+  const { shelf } = req.query;
+
+  const allowedShelves = ["currentlyReading", "wantToRead", "read"];
+  if (!allowedShelves.includes(shelf)) {
+    return res.status(400).json({ message: "Invalid shelf value" });
+  }
 
   try {
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(400).json({ message: "User not found" });
-    }
-
     const book = await Book.findOne({ id: bookId });
     if (!book) {
       return res.status(400).json({ message: "Book not found" });
     }
 
-    const allowedShelves = ["currentlyReading", "wantToRead", "read"];
-    if (!allowedShelves.includes(shelf)) {
-      return res.status(400).json({ message: "Invalid shelf value" });
-    }
-
-    user.books.push({
-      shelve: shelf,
-      rating,
-      book: bookId,
+    await User.findByIdAndUpdate(req.user._id, {
+      $pull: {
+        books: {
+          book: bookId,
+        },
+      },
     });
 
-    await user.save();
+    await User.findByIdAndUpdate(req.user._id, {
+      $push: {
+        books: { book: bookId, shelf },
+      },
+    }).exec();
 
     return res.status(201).json({});
   } catch (error) {
@@ -78,19 +88,17 @@ async function addBookToUser(req, res, next) {
 }
 
 async function retrieveUserBooks(req, res, next) {
-  const userId = req.user._id;
   const { shelf } = req.query;
 
   try {
-    const user = await User.findById(userId, "books");
-
     let query;
     if (shelf && shelf.toLowerCase() !== "all") {
-      console.log(user.books);
-      const filteredBooks = user.books.filter((book) => book.shelve === shelf);
+      const filteredBooks = req.user.books.filter(
+        (book) => book.shelf === shelf,
+      );
       query = { books: filteredBooks };
     } else {
-      query = { books: user.books };
+      query = { books: req.user.books };
     }
 
     const queryModel = new User({ books: query.books });
@@ -156,36 +164,38 @@ async function removeUserBook(req, res, next) {
   }
 }
 
-
-async function rateBook ( req, res, next ) {
-  let [ mongooseError, bookInUser ] = await asyncWrapper( User.findOneAndUpdate(
-    { _id: req.user._id, "books.book": req.body.bookId },
-    {
-      $set: {
-        "books.$.rating": req.body.rating,
-      },
-    },
-    { new: true }
-  ), );
-  if (!bookInUser) {
-    [mongooseError, bookInUser] = await asyncWrapper( User.findByIdAndUpdate(
-      { _id: req.user._id },
+async function rateBook(req, res, next) {
+  let [mongooseError, bookInUser] = await asyncWrapper(
+    User.findOneAndUpdate(
+      { _id: req.user._id, "books.book": req.body.bookId },
       {
-        $push: {
-          books: {
-            rating: req.body.rating,
-            book: req.body.bookId,
-          },
+        $set: {
+          "books.$.rating": req.body.rating,
         },
       },
       { new: true },
-    ));
+    ),
+  );
+  if (!bookInUser) {
+    [mongooseError, bookInUser] = await asyncWrapper(
+      User.findByIdAndUpdate(
+        { _id: req.user._id },
+        {
+          $push: {
+            books: {
+              rating: req.body.rating,
+              book: req.body.bookId,
+            },
+          },
+        },
+        { new: true },
+      ),
+    );
   }
-  const [ err, book ] = await asyncWrapper( Book.findOne( { id: req.body.bookId } ) );
-  if ( err )
-    return next( err );
-  if ( !book ) {
-    next( new ValidationError( `no book with id :${ req.body.bookId }` ) );
+  const [err, book] = await asyncWrapper(Book.findOne({ id: req.body.bookId }));
+  if (err) return next(err);
+  if (!book) {
+    next(new ValidationError(`no book with id :${req.body.bookId}`));
     return;
   }
   const updatedBook = await Book.findOneAndUpdate(
@@ -200,12 +210,17 @@ async function rateBook ( req, res, next ) {
           sumRatings: book.avgRating.sumRatings + req.body.rating,
         },
       },
-    },
+    ),
   );
-  if ( !mongooseError )
-    return res.status( 200 ).json( bookInUser );
-  return next( mongooseError );
-  
+
+  if (updateError) {
+    console.log(updateError);
+    next(updateError);
+    return;
+  }
+
+  if (!mongooseError) return res.status(200).json(bookInUser);
+  next(mongooseError);
 }
 
 export default {

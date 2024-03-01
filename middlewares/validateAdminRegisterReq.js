@@ -1,7 +1,7 @@
 import Joi from "joi";
 import asyncWrapper from "../utils/asyncWrapper.js";
 
-async function validateRegisterReq(req, res, next) {
+async function validateAdminRegisterReq(req, res, next) {
   const schema = Joi.object({
     firstName: Joi.string()
       .trim()
@@ -44,4 +44,4 @@ async function validateRegisterReq(req, res, next) {
   next();
 }
 
-export default validateRegisterReq;
+export default validateAdminRegisterReq;
